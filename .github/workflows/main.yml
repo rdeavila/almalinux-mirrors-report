@@ -1,0 +1,28 @@
+name: Create Report
+
+on:
+  schedule:
+    - cron: '30 * * * *'
+
+jobs:
+  create_report:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Calculate mirror drift
+        run: |
+          apt install jq pandoc python3-pip curl
+          pip install yq
+          mkdir dist
+          bash run.sh > dist/result.md
+          cd dist
+          pandoc -f markdown -t html result.md > index.html
+          rm result.md
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: b3e2c8cc31d84afe192b6a5353c2f7ef
+          projectName: almalinux-mirrors-report
+          directory: dist
+          branch: main
