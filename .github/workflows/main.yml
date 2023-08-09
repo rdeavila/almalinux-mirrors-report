@@ -11,15 +11,17 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - name: Calculate mirror drift
+      - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y jq pandoc python3-pip curl
           pip install yq
+      - name: Calculate mirror drift
+        run: |
           mkdir dist
-          bash run.sh > dist/result.md
-          cd dist
-          pandoc -f markdown -t html result.md > index.html
-          rm result.md
+          bash run.sh > result.md
+      - name: Compile HTML file
+        run: |
+          pandoc --metadata title="AlmaLinux Mirror Propagation Report" --to=html5 -s -f markdown+smart --template=template.html result.md -o dist/index.html
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
