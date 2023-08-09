@@ -26,6 +26,8 @@ ORIGINAL_TIME=$(curl -fsSL "https://rsync.repo.almalinux.org/almalinux/TIME")
 # File names
 FILES=$(curl -fsSL https://api.github.com/repos/AlmaLinux/mirrors/contents/mirrors.d | jq -r '.[].name')
 
+echo "# AlmaLinux Mirror Propagation Report"
+echo ""
 echo "This service provides information about the status of the AlmaLinux mirrors. The report shows the time it takes for updates to propagate to the mirrors, as well as the number of mirrors that have been updated. This information can be used to identify mirrors that are not up to date, and to troubleshoot any problems with the mirror propagation process."
 echo ""
 echo "## Primary mirror info"
@@ -74,5 +76,3 @@ for FILE in $FILES; do
 
   echo "| $NAME | $SPONSOR | $TIME | [${ADDRESS}TIME](${ADDRESS}TIME) |"
 done
-# pandoc -f markdown -t html public/result.md > public/index.html
-# pandoc --css=public/style.css --pagetitle="AlmaLinux mirror propagation report" --to=html5 -s -f markdown+smart public/result.md -o index.html 
