@@ -54,7 +54,7 @@ for FILE in $FILES; do
     ADDRESS="$ADDRESS/"
   fi
 
-  TIME=$(curl -fsSL -m 3 "${ADDRESS}TIME" 2>/dev/null)
+  TIME=$(curl -fsSL -m 2 "${ADDRESS}TIME" 2>/dev/null)
 
   if [ $? -eq 0 ]; then
     if [[ $TIME =~ ^[0-9]+$ ]]; then
