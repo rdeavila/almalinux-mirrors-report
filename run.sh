@@ -35,12 +35,8 @@ echo ""
 echo "- Address: \`rsync.repo.almalinux.org\`"
 echo "- Last update: \`$(date -ud "@$ORIGINAL_TIME" +"%Y-%m-%d %H:%M:%S") UTC\`"
 echo ""
-echo "## Mirror drift"
-echo ""
-echo "- Last report update: \`$(date -u +"%Y-%m-%d %H:%M:%S") UTC\`"
-echo ""
-echo "| Name | Sponsor | Status | URL |"
-echo "|:--|:--|:--|:--|"
+echo "| Mirror Name | Sponsor | Status |"
+echo "|:--|:--|:--|"
 
 for FILE in $FILES; do
   DETAILS=$(curl -fsSL "https://raw.githubusercontent.com/AlmaLinux/mirrors/master/mirrors.d/$FILE")
@@ -74,5 +70,11 @@ for FILE in $FILES; do
     TIME="Unavailable"
   fi
 
-  echo "| $NAME | $SPONSOR | $TIME | [${ADDRESS}TIME](${ADDRESS}TIME) |"
+  echo "| $NAME | $SPONSOR | $TIME |"
 done
+
+echo ""
+echo "Last report update: \`$(date -u +"%Y-%m-%d %H:%M:%S") UTC\`"
+echo ""
+
+exit 0
