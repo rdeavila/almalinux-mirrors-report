@@ -17,7 +17,7 @@ jobs:
           pip install yq mkdocs-material
       - name: Calculate mirror drift
         run: |
-          mkdir dist
+          which mkdocs
           bash run.sh > docs/index.md
       - name: Compile HTML file
         run: |

@@ -10,11 +10,6 @@ if ! command -v yq >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! command -v pandoc >/dev/null 2>&1; then
-  echo "The pandoc command is not available"
-  exit 1
-fi
-
 ORIGINAL_TIME=$(curl -fsSL "https://rsync.repo.almalinux.org/almalinux/TIME")
 
 # Example: https://admin.fedoraproject.org/mirrormanager/propagation
