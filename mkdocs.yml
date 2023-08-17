@@ -1,0 +1,36 @@
+site_name: AlmaLinux Mirror Propagation Report
+copyright: Copyright &copy; 2000 - 2023 rodrigo de avila
+repo_name: rdeavila/almalinux-mirrors-report
+edit_uri: edit/main/docs/
+theme:
+  name: material
+  language: en
+  logo: https://wiki.almalinux.org/images/logo.png
+  favicon: https://almalinux.org/fav/favicon-32x32.png
+  palette:
+    - scheme: default
+      primary: white
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+          remove_comments: true
+      cache_safe: true
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/rdeavila
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/RodrigoAvila
