@@ -2,9 +2,8 @@ name: Create Report
 
 on:
   schedule:
-    - cron: '30 * * * *'
+    - cron: '0 0,3,6,9,12,15,18,21 * * *'
   workflow_dispatch:
-
 
 jobs:
   create_report:
