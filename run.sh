@@ -10,7 +10,14 @@ if ! command -v yq >/dev/null 2>&1; then
   exit 1
 fi
 
-ORIGINAL_TIME=$(curl -fsSL "https://rsync.repo.almalinux.org/almalinux/TIME")
+ATL_TIME=$(date -d "$(curl -sSq https://atl.rsync.repo.almalinux.org/almalinux/timestamp.txt)" +%s)
+SEA_TIME=$(date -d "$(curl -sSq https://sea.rsync.repo.almalinux.org/almalinux/timestamp.txt)" +%s)
+
+if [ $ATL_TIME -ge $SEA_TIME ]; then
+  ORIGINAL_TIME=$ATL_TIME
+else
+  ORIGINAL_TIME=$SEA_TIME
+fi
 
 # Example: https://admin.fedoraproject.org/mirrormanager/propagation
 
