@@ -7,6 +7,8 @@ theme:
   language: en
   logo: https://wiki.almalinux.org/images/logo.png
   favicon: https://almalinux.org/fav/favicon-32x32.png
+  features:
+    - content.tabs.link
   palette:
     - scheme: default
       primary: white
@@ -28,6 +30,10 @@ plugins:
       htmlmin_opts:
           remove_comments: true
       cache_safe: true
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 extra:
   social:
     - icon: fontawesome/brands/github

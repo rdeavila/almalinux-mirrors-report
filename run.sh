@@ -44,8 +44,13 @@ echo ""
 echo "- Address: \`rsync.repo.almalinux.org\`"
 echo "- Last update: \`$(date -ud "@$ORIGINAL_TIME" +"%Y-%m-%d %H:%M:%S") UTC\`"
 echo ""
-echo "| Mirror Name | Sponsor | Status |"
-echo "|:--|:--|:--|"
+
+declare -a IN_SYNC
+declare -a BEHIND
+declare -a UNAVAILABLE
+i=0
+j=0
+k=0
 
 for FILE in $FILES; do
   DETAILS=$(curl -fsSL "https://raw.githubusercontent.com/AlmaLinux/mirrors/master/mirrors.d/$FILE")
@@ -69,19 +74,52 @@ for FILE in $FILES; do
 
       if [ "$DIFF" -eq 0 ]; then
         TIME="IN SYNC"
+        IN_SYNC[$i]="| $NAME | $SPONSOR |"
+        i=$((i+1))
       else
         TIME="$(date -d "@$(($DIFF))" +"%Hh %Mmin") behind"
+        BEHIND[$j]="| $NAME | $SPONSOR | $TIME |"
+        j=$((j+1))
       fi
     else
       TIME="Unavailable"
+      UNAVAILABLE[$k]="| $NAME | $SPONSOR |"
+      k=$((k+1))
     fi
   else
     TIME="Unavailable"
+    UNAVAILABLE[$k]="| $NAME | $SPONSOR |"
+    k=$((k+1))
   fi
-
-  echo "| $NAME | $SPONSOR | $TIME |"
 done
 
+echo "=== \"In sync\""
+echo ""
+echo "    | Mirror Name | Sponsor |"
+echo "    |:--|:--|"
+for value in "${IN_SYNC[@]}"; do
+  echo "    $value"
+done
+
+echo ""
+echo "=== \"Behind primary\""
+echo ""
+echo "    | Mirror Name | Sponsor | Time behind primary |"
+echo "    |:--|:--|:--|"
+for value in "${BEHIND[@]}"; do
+  echo "    $value"
+done
+
+echo ""
+echo "=== \"Unavailable\""
+echo ""
+echo "    | Mirror Name | Sponsor |"
+echo "    |:--|:--|"
+for value in "${UNAVAILABLE[@]}"; do
+  echo "    $value"
+done
+
+echo ""
 echo ""
 echo "Last report update: \`$(date -u +"%Y-%m-%d %H:%M:%S") UTC\`"
 echo ""
