@@ -81,7 +81,7 @@ for FILE in $FILES; do
         hours=$(( (DIFF % 86400) / 3600 ))
         minutes=$(( (DIFF % 3600) / 60 ))
 
-        TIME="$([ $days -gt 0 ] && echo -n \"${days}d \")$([ $hours -gt 0 ] && echo -n \"${hours}h \")$([ $minutes -gt 0 ] && echo \"${minutes}min\")\" behind"
+        TIME="$([ $days -gt 0 ] && echo -n "${days}d ")$([ $hours -gt 0 ] && echo -n "${hours}h ")$([ $minutes -gt 0 ] && echo "${minutes}min") behind"
         BEHIND[$j]="| $NAME | $SPONSOR | $TIME |"
         j=$((j+1))
       fi
