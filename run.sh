@@ -77,7 +77,11 @@ for FILE in $FILES; do
         IN_SYNC[$i]="| $NAME | $SPONSOR |"
         i=$((i+1))
       else
-        TIME="$(date -d "@$(($DIFF))" +"%Hh %Mmin") behind"
+        days=$((DIFF / 86400))
+        hours=$(( (DIFF % 86400) / 3600 ))
+        minutes=$(( (DIFF % 3600) / 60 ))
+
+        TIME="$([ $days -gt 0 ] && echo -n \"${days}d \")$([ $hours -gt 0 ] && echo -n \"${hours}h \")$([ $minutes -gt 0 ] && echo \"${minutes}min\")\" behind"
         BEHIND[$j]="| $NAME | $SPONSOR | $TIME |"
         j=$((j+1))
       fi
