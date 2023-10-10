@@ -72,7 +72,7 @@ for FILE in $FILES; do
     if [[ $TIME =~ ^[0-9]+$ ]]; then
       DIFF=$(($ORIGINAL_TIME - $TIME))
 
-      if [ "$DIFF" -eq 0 ]; then
+      if [ "$DIFF" -le 0 ]; then
         TIME="IN SYNC"
         IN_SYNC[$i]="| $NAME | $SPONSOR |"
         i=$((i+1))
