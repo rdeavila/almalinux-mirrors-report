@@ -1,0 +1,10 @@
+name: almalinux-mirrors-report
+version: 1.0.0
+
+targets:
+  report:
+    main: src/update.cr
+
+dependencies:
+  crest:
+    github: mamantoha/crest

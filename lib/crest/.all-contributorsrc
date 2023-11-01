@@ -1,0 +1,43 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "mamantoha",
+      "name": "Anton Maminov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61285?v=4",
+      "profile": "https://github.com/mamantoha",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "cyangle",
+      "name": "Chao Yang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15083254?v=4",
+      "profile": "https://www.linkedin.com/in/chao-yang-r/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "psikoz",
+      "name": "psikoz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40601249?v=4",
+      "profile": "https://github.com/psikoz",
+      "contributions": [
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "crest",
+  "projectOwner": "mamantoha"
+}

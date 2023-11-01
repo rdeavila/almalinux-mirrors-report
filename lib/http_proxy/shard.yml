@@ -1,0 +1,14 @@
+name: http_proxy
+version: 0.10.1
+
+authors:
+  - Theo Li <bbtfrr@gmail.com>
+  - Anton Maminov <anton.maminov@gmail.com>
+
+crystal: ">= 1.0.0"
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+
+license: MIT

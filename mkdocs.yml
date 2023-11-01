@@ -1,7 +1,6 @@
 site_name: AlmaLinux Mirror Propagation Report
 copyright: Copyright &copy; 2000 - 2023 rodrigo de avila
 repo_name: rdeavila/almalinux-mirrors-report
-edit_uri: edit/main/docs/
 theme:
   name: material
   language: en
