@@ -16,8 +16,7 @@ jobs:
           pip install yq mkdocs-material mkdocs-minify-plugin
       - name: Calculate mirror drift
         run: |
-          which mkdocs
-          bash run.sh > docs/index.md
+          ./bin/report
       - name: Compile HTML file
         run: |
           mkdocs build
