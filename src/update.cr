@@ -27,23 +27,22 @@ def time_ago_in_words(from_time, to_time)
   end
 end
 
-puts "Collecting time from primary mirrors..."
+print "Collecting time from primary mirrors..."
 atl_resp = Crest.get "https://atl.rsync.repo.almalinux.org/almalinux/TIME"
 sea_resp = Crest.get "https://sea.rsync.repo.almalinux.org/almalinux/TIME"
 
 if atl_resp.body.to_i >= sea_resp.body.to_i
-  puts "  Using time from ATL"
+  puts " done. Using time from ATL"
   original_time = Time.unix atl_resp.body.to_i
 else
-  puts "  Using time from SEA"
+  puts " done. Using time from SEA"
   original_time = Time.unix sea_resp.body.to_i
 end
 
-puts "Collecting mirror list..."
-
+print "Collecting mirror list..."
 all_mirrors = Crest.get "https://mirrors.almalinux.org/debug/json/all_mirrors"
-
 mirrorlist = JSON.parse(all_mirrors.body)["result"]
+puts " done."
 
 md = String::Builder.new
 in_sync = String::Builder.new
@@ -70,6 +69,8 @@ md << "\n"
 mirrorlist_total = mirrorlist.as_h.each_key.size
 mirrorlist_completed = 0
 
+puts "Starting mirror probe..."
+
 mirrorlist.as_h.each_key do |mirror|
   if mirrorlist[mirror]["status"] == "ok"
     sponsor = mirrorlist[mirror]["sponsor_name"]
@@ -87,10 +88,6 @@ mirrorlist.as_h.each_key do |mirror|
 
     begin
       mirror_resp = Crest.get "#{mirror_address}TIME", read_timeout: 2.seconds, connect_timeout: 2.seconds, max_redirects: 2
-
-      # if mirror_resp.headers.has_key? "Location"
-      #   mirror_resp = HTTP::Client.get "#{mirror_resp.headers["Location"]}"
-      # end
 
       if mirror_resp.success?
         mirror_time = Time.unix mirror_resp.body.to_i
@@ -110,7 +107,7 @@ mirrorlist.as_h.each_key do |mirror|
   end
   mirrorlist_completed = mirrorlist_completed + 1
 
-  puts "#{((mirrorlist_completed / mirrorlist_total) * 100).ceil}% done"
+  puts "  #{((mirrorlist_completed / mirrorlist_total) * 100).ceil}%"
 end
 
 md << "=== \"In sync\"\n"
@@ -138,4 +135,6 @@ md << "\n"
 md << "Last report update: `#{Time.utc}`"
 md << ""
 
+print "Writing Markdown..."
 File.write("docs/index.md", md.to_s)
+puts " done."
