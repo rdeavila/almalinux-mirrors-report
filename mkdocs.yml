@@ -8,6 +8,9 @@ theme:
   favicon: https://almalinux.org/fav/favicon-32x32.png
   features:
     - content.tabs.link
+    - search.highlight
+    - search.share
+    - search.suggest
   palette:
     - scheme: default
       primary: white
@@ -22,6 +25,8 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - minify:
       minify_html: true
       minify_js: true
