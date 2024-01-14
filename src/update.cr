@@ -60,10 +60,8 @@ md << "# AlmaLinux Mirror Propagation Report\n"
 md << "\n"
 md << "This service provides information about the status of the AlmaLinux mirrors. The report shows the time it takes for updates to propagate to the mirrors, as well as the number of mirrors that have been updated. This information can be used to identify mirrors that are not up to date, and to troubleshoot any problems with the mirror propagation process.\n"
 md << "\n"
-md << "## Primary mirror info\n"
-md << "\n"
-md << "- Address: `rsync.repo.almalinux.org`\n"
-md << "- Last mirror update: `#{original_time}`\n"
+md << "- Source mirror address: `rsync.repo.almalinux.org`\n"
+md << "- Source mirror build date: `#{original_time}`\n"
 md << "\n"
 
 mirrorlist_total = mirrorlist.as_h.each_key.size
@@ -71,8 +69,8 @@ mirrorlist_completed = 0
 
 puts "Starting mirror probe..."
 
-mirrorlist.as_h.each_key do |mirror|
-  if mirrorlist[mirror]["status"] == "ok"
+mirrorlist.as_h.each_key do |mirror| 
+  if mirrorlist[mirror]["status"] == "ok" && mirrorlist[mirror]["private"] == false 
     sponsor = mirrorlist[mirror]["sponsor_name"]
     sponsor_url = mirrorlist[mirror]["sponsor_url"]
 
