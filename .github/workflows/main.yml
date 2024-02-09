@@ -1,9 +1,9 @@
 name: Create Report
 
-on:
-  schedule:
-    - cron: '*/15 * * * *'
-  workflow_dispatch:
+# on:
+#   schedule:
+#     - cron: '*/15 * * * *'
+#   workflow_dispatch:
 
 jobs:
   create_report:
