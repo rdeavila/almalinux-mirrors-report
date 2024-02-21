@@ -28,8 +28,8 @@ def time_ago_in_words(from_time, to_time)
 end
 
 print "Collecting time from primary mirrors..."
-atl_resp = Crest.get "https://atl.rsync.repo.almalinux.org/almalinux/TIME"
-sea_resp = Crest.get "https://sea.rsync.repo.almalinux.org/almalinux/TIME"
+atl_resp = Crest.get "https://atl.rsync.repo.almalinux.org/almalinux/TIME", tls: OpenSSL::SSL::Context::Client.insecure
+sea_resp = Crest.get "https://sea.rsync.repo.almalinux.org/almalinux/TIME", tls: OpenSSL::SSL::Context::Client.insecure
 
 if atl_resp.body.to_i >= sea_resp.body.to_i
   puts " done. Using time from ATL"
@@ -40,7 +40,7 @@ else
 end
 
 print "Collecting mirror list..."
-all_mirrors = Crest.get "https://mirrors.almalinux.org/debug/json/all_mirrors"
+all_mirrors = Crest.get "https://mirrors.almalinux.org/debug/json/all_mirrors", tls: OpenSSL::SSL::Context::Client.insecure
 mirrorlist = JSON.parse(all_mirrors.body)["result"]
 puts " done."
 
@@ -69,8 +69,8 @@ mirrorlist_completed = 0
 
 puts "Starting mirror probe..."
 
-mirrorlist.as_h.each_key do |mirror| 
-  if mirrorlist[mirror]["status"] == "ok" && mirrorlist[mirror]["private"] == false 
+mirrorlist.as_h.each_key do |mirror|
+  if mirrorlist[mirror]["status"] == "ok" && mirrorlist[mirror]["private"] == false
     sponsor = mirrorlist[mirror]["sponsor_name"]
     sponsor_url = mirrorlist[mirror]["sponsor_url"]
 
