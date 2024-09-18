@@ -16,7 +16,7 @@ jobs:
           pip install mkdocs-material mkdocs-minify-plugin
       - name: Calculate mirror drift
         run: |
-          bash -x run.sh
+          bash run.sh
       - name: Compile HTML file
         run: |
           mkdocs build
