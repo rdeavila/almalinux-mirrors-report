@@ -71,7 +71,7 @@ in_sync=""
 behind=""
 unavailable=""
 
-echo "$mirrorlist" | jq -r 'keys[]' | while read -r mirror; do
+while read -r mirror; do
     status=$(echo "$mirrorlist" | jq -r --arg m "$mirror" '.[$m].status')
     private=$(echo "$mirrorlist" | jq -r --arg m "$mirror" '.[$m].private')
 
@@ -96,18 +96,18 @@ echo "$mirrorlist" | jq -r 'keys[]' | while read -r mirror; do
             compare=$((original_time - mirror_time))
 
             if [[ $compare -le 0 ]]; then
-                in_sync="${in_sync}    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) |\n"
+                in_sync+="    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) |"$'\n'
             else
-                behind="${behind}    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) | $(time_ago_in_words "${mirror_time}" "${original_time}") |\n"
+                behind+="    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) | $(time_ago_in_words "${mirror_time}" "${original_time}") |"$'\n'
             fi
         else
-            unavailable="${unavailable}    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) | curl error |\n" 
+            unavailable+="    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) | ${mirror_resp} |"$'\n'
         fi
     fi
     mirrorlist_completed=$((mirrorlist_completed + 1))
 
     echo "Tested $mirrorlist_completed of $mirrorlist_total"
-done
+done <<< "$(echo "$mirrorlist" | jq -r 'keys[]')"
 
 cat <<MD >> docs/index.md
 === "In sync"
