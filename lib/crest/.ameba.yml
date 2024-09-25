@@ -1,4 +1,0 @@
-Globs:
-  - "**/*.cr"
-  - "!samples"
-  - "!lib"
