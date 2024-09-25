@@ -1,5 +1,5 @@
 site_name: AlmaLinux Mirror Propagation Report
-copyright: Copyright &copy; 2000 - 2023 rodrigo de avila
+copyright: Copyright &copy; 2000 - 2024 rodrigo de avila
 repo_name: rdeavila/almalinux-mirrors-report
 theme:
   name: material
@@ -25,8 +25,6 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 plugins:
-  - search:
-      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - minify:
       minify_html: true
       minify_js: true
@@ -41,6 +39,4 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/rdeavila
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/RodrigoAvila
+      link: https://github.com/rdeavila/almalinux-mirrors-report
