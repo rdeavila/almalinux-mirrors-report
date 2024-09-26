@@ -89,7 +89,7 @@ while read -r mirror; do
             mirror_address="$mirror_address/"
         fi
 
-        mirror_resp=$(curl -sSL --max-time 2 --max-redirs 2 "$mirror_address/TIME" 2>&1)
+        mirror_resp=$(curl -sSL --max-time 5 --max-redirs 2 "$mirror_address/TIME" 2>&1)
 
         if [[ $? -eq 0 ]]; then
             mirror_time=$mirror_resp
