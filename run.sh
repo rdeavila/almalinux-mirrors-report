@@ -89,19 +89,19 @@ while read -r mirror; do
             mirror_address="$mirror_address/"
         fi
 
-        mirror_resp=$(curl -s -L --max-time 2 --max-redirs 2 "$mirror_address/TIME")
+        mirror_resp=$(curl -sSL --max-time 2 --max-redirs 2 "$mirror_address/TIME" 2>&1)
 
         if [[ $? -eq 0 ]]; then
             mirror_time=$mirror_resp
             compare=$((original_time - mirror_time))
 
             if [[ $compare -le 0 ]]; then
-                in_sync+="    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) |"$'\n'
+                in_sync+="    | ${mirror} | [${sponsor}](${sponsor_url}) |"$'\n'
             else
-                behind+="    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) | $(time_ago_in_words "${mirror_time}" "${original_time}") |"$'\n'
+                behind+="    | ${mirror} | [${sponsor}](${sponsor_url}) | $(time_ago_in_words "${mirror_time}" "${original_time}") |"$'\n'
             fi
         else
-            unavailable+="    | ${mirror} | \[${sponsor}\]\(${sponsor_url}\) | ${mirror_resp} |"$'\n'
+            unavailable+="    | ${mirror} | [${sponsor}](${sponsor_url}) | ${mirror_resp} |"$'\n'
         fi
     fi
     mirrorlist_completed=$((mirrorlist_completed + 1))
