@@ -123,7 +123,7 @@ while read -r mirror; do
         fi
 
         # Fetch the mirror's TIME file to get the last update time
-        mirror_resp=$(curl -sSL --max-time 5 --max-redirs 2 "$mirror_address/TIME" 2>&1)
+        mirror_resp=$(curl -sSL --max-time 5 --max-redirs 2 "$mirror_address/TIME" 2>&1 | grep -o '^[0-9]*$')
 
         if [[ $? -eq 0 ]]; then
             # Calculate the time difference between the primary mirror and the current mirror
