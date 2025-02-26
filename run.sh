@@ -31,7 +31,7 @@ time_ago_in_words() {
     to_time=$2
 
     time_difference=$((to_time - from_time))
-    minutes=$((difference / 60))
+    minutes=$((time_difference / 60))
     hours=$((minutes / 60))
     days=$((hours / 24))
     weeks=$((days / 7))
