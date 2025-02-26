@@ -123,9 +123,9 @@ while read -r mirror; do
         fi
 
         # Fetch the mirror's TIME file to get the last update time
-        mirror_resp=$(curl -sSL --max-time 5 --max-redirs 2 "$mirror_address/TIME" 2>&1 | grep -o '^[0-9]*$')
+        mirror_resp=$(curl -sSL --max-time 5 --max-redirs 2 "$mirror_address/TIME" 2>&1)
 
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]] && [[ $mirror_resp =~ ^[0-9]+$ ]]; then
             # Calculate the time difference between the primary mirror and the current mirror
             mirror_time=$mirror_resp
             compare=$((original_time - mirror_time))
