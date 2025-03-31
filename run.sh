@@ -103,8 +103,8 @@ mirror_keys=$(echo "$mirrorlist" | jq -r 'keys[]')
 # Loop through each mirror in the mirror list
 while read -r mirror; do
     # Get the status and privacy setting of the current mirror
-    status=$(echo "$mirrorlist" | jq -r --arg m "$mirror" '.[$m].status')
-    private=$(echo "$mirrorlist" | jq -r --arg m "$mirror" '.[$m].private')
+    status=$(jq -r --arg m "$mirror" '.[$m].status' <<< "$mirrorlist")
+    private=$(jq -r --arg m "$mirror" '.[$m].private' <<< "$mirrorlist")
 
     if [[ $status == "ok" && $private == false ]]; then
         # Get the sponsor name and URL of the current mirror
