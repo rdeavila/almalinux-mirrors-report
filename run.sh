@@ -54,40 +54,41 @@ time_ago_in_words() {
     fi
 }
 
+in_sync_record() {
+    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td></tr>"
+}
+
+behind_record() {
+    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
+}
+
+unavailable_record() {
+    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
+}
+
 echo "Collecting time from primary mirrors..."
 
-atl_resp=$(curl -s -k --max-time 10 "https://atl.rsync.repo.almalinux.org/almalinux/TIME")
-sea_resp=$(curl -s -k "https://sea.rsync.repo.almalinux.org/almalinux/TIME")
+original_time=""
+original_loc=""
 
-if [[ $atl_resp -ge $sea_resp ]]; then
-    echo " done. Using time from ATL"
-    original_time=$atl_resp
-else
-    echo " done. Using time from SEA"
-    original_time=$sea_resp
+# Atlanta, GA, USA
+atl_resp=$(curl -s -k --max-time 10 "https://atl.rsync.repo.almalinux.org/almalinux/TIME")
+original_time="$atl_resp"
+original_loc="Atlanta, GA, USA"
+
+# Seattle, WA, USA
+sea_resp=$(curl -s -k "https://sea.rsync.repo.almalinux.org/almalinux/TIME")
+if [[ -z "$original_time" ]] || [[ "$sea_resp" -gt "$original_time" ]]; then
+    original_time="$sea_resp"
+    source_server="Seattle, WA, USA"
 fi
+
+echo " done. Using time from $original_loc"
 
 echo "Collecting mirror list..."
 all_mirrors=$(curl -s -k --max-time 10 "https://mirrors.almalinux.org/debug/json/all_mirrors")
 mirrorlist=$(echo "$all_mirrors" | jq '.result')
 echo " done."
-
-cat <<MD > docs/index.md
----
-hide:
-  - footer
-  - toc
-  - navigation
----
-
-# AlmaLinux Mirror Propagation Report
-
-This service provides information about the status of the AlmaLinux mirrors. The report shows the time it takes for updates to propagate to the mirrors, as well as the number of mirrors that have been updated. This information can be used to identify mirrors that are not up to date, and to troubleshoot any problems with the mirror propagation process.
-
-- Source mirror address: \`rsync.repo.almalinux.org\`
-- Source mirror build date: \`$(date -d @$original_time)\`
-
-MD
 
 mirrorlist_total=$(echo "$mirrorlist" | jq 'keys | length')
 mirrorlist_completed=0
@@ -132,18 +133,18 @@ while read -r mirror; do
 
             if [[ $compare -le 0 ]]; then
                 # Mirror is in sync with the primary mirror
-                in_sync+="    | ${mirror} | [${sponsor}](${sponsor_url}) |"$'\n'
+                in_sync+="$(in_sync_record "${mirror}" "${sponsor_url}" "${sponsor}")"
             else
                 # Mirror is behind the primary mirror
-                behind+="    | ${mirror} | [${sponsor}](${sponsor_url}) | $(time_ago_in_words "${mirror_time}" "${original_time}") |"$'\n'
-                # Notify if the mirror is significantly behind (more than 6 hours)
-                if [[ $compare -gt 21600 ]]; then
+                behind+="$(behind_record "${mirror}" "${sponsor_url}" "${sponsor}" "$(time_ago_in_words "${mirror_time}" "${original_time}")")"
+                # Notify if the mirror is significantly behind (more than 3 hours)
+                if [[ $compare -gt 10800 ]]; then
                     notify "$mirror" "$(time_ago_in_words "${mirror_time}" "${original_time}")"
                 fi
             fi
         else
             # Mirror is unavailable or failed to fetch the TIME file
-            unavailable+="    | ${mirror} | [${sponsor}](${sponsor_url}) | ${mirror_resp} |"$'\n'
+            unavailable+="$(unavailable_record "${mirror}" "${sponsor_url}" "${sponsor}" "${mirror_resp}")"
         fi
     fi
     # Increment the count of tested mirrors
@@ -153,28 +154,18 @@ while read -r mirror; do
     echo "Tested $mirrorlist_completed of $mirrorlist_total"
 done <<< "$mirror_keys"
 
-cat <<MD >> docs/index.md
-=== "In sync"
+echo -n "Writing file..."
 
-    | Mirror Name | Sponsor |
-    |:--|:--|
-${in_sync}
+rm -rf site
+mkdir site
+cp index.html ./site/
 
-=== "Behind primary"
+sed -i "s|IN_SYNC_RESPONSE|${in_sync}|g" ./site/index.html
+sed -i "s|BEHIND_PRIMARY_RESPONSE|${behind}|g" ./site/index.html
+sed -i "s|UNAVAILABLE_RESPONSE|${unavailable}|g" ./site/index.html
+sed -i "s|SOURCE_TIME|$(date -d @$original_time)|g" ./site/index.html
+sed -i "s|REPORT_TIME|$(date -u)|g" ./site/index.html
 
-    | Mirror Name | Sponsor | Time behind primary |
-    |:--|:--|:--|
-${behind}
+echo " done."
 
-=== "Unavailable"
-
-    | Mirror Name | Sponsor | Reason |
-    |:--|:--|:--|
-${unavailable}
-
-
-Last report update: \`$(date -u)\`
-
-MD
-
-echo "Writing Markdown... done."
+exit 0

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlmaLinux Mirror Propagation Report</title>
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.0/dist/css/tabler.min.css" />
+  <style>
+    :root {
+      font-family: "Inter Var", sans-serif;
+      font-feature-settings: 'liga' 1, 'calt' 1;
+      --tblr-font-sans-serif: "Inter Var", Inter, -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
+    @supports (font-variation-settings: normal) {
+      :root { font-family: InterVariable, sans-serif; }
+    }
+    @media (min-width: 992px) {
+      :host,
+      :root {
+        margin-left: 0;
+      }
+    }
+    body {
+      overflow-y: scroll;
+    }
+  </style>
+</head>
+
+<body class="layout-boxed">
+  <div class="page">
+    <div class="page-wrapper">
+      <div class="page-header d-print-none" aria-label="Page header">
+        <div class="container-xl">
+          <div class="row g-2 align-items-center">
+            <div class="col">
+              <div class="section-header">
+                <h1 class="section-title h1">AlmaLinux Mirror Propagation Report</h1>
+                <div class="section-description">
+                  This service provides information about the status of
+                  the AlmaLinux mirrors. The report shows the time it
+                  takes for updates to propagate to the mirrors, as well
+                  as the number of mirrors that have been updated. This
+                  information can be used to identify mirrors that are not
+                  up to date, and to troubleshoot any problems with the
+                  mirror propagation process.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- BEGIN PAGE BODY -->
+      <div class="page-body">
+        <div class="container-xl">
+          <div class="row row-deck row-cards">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header">
+                  <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <a href="#in-sync" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">
+                        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-cloud-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11 18.004h-4.343c-2.572 -.004 -4.657 -2.011 -4.657 -4.487c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.388 0 2.585 .82 3.138 2.007" /><path d="M15 19l2 2l4 -4" /></svg>
+                        In Sync
+                      </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <a href="#behind-primary" class="nav-link" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><!-- Download SVG icon from http://tabler.io/icons/icon/user -->
+                        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-cloud-exclamation"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 18.004h-8.343c-2.572 -.004 -4.657 -2.011 -4.657 -4.487c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.374 0 2.562 .805 3.121 1.972" /><path d="M19 16v3" /><path d="M19 22v.01" /></svg>
+                        Behind Primary
+                      </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <a href="#unavailable" class="nav-link" data-bs-toggle="tab" aria-selected="false" tabindex="-2" role="tab"><!-- Download SVG icon from http://tabler.io/icons/icon/user -->
+                        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-cloud-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 18.004h-6.343c-2.572 -.004 -4.657 -2.011 -4.657 -4.487c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.37 0 2.556 .8 3.117 1.964" /><path d="M22 22l-5 -5" /><path d="M17 22l5 -5" /></svg>
+                        Unavailable
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane active show" id="in-sync" role="tabpanel">
+                      <h4>In Sync</h4>
+                      <p>
+                        This is the list of mirror servers that are currently
+                        synchronized with the source mirror. This indicates that
+                        the data on these listed mirrors is up-to-date and
+                        matches the content of the primary source.
+                      </p>
+                      <div class="card">
+                        <div class="table-responsive">
+                          <table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                              <tr>
+                                <th class="w-2">Mirror Name</th>
+                                <th>Sponsor</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              IN_SYNC_RESPONSE
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tab-pane" id="behind-primary" role="tabpanel">
+                      <h4>Behind primary</h4>
+                      <p>
+                        This is the list of mirror servers that are currently
+                        experiencing data lag when compared to the primary
+                        source mirror. This means the information on these
+                        listed mirrors is not as up-to-date as the data
+                        available on the main server.
+                      </p>
+                      <div class="card">
+                        <div class="table-responsive">
+                          <table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                              <tr>
+                                <th class="w-2">Mirror Name</th>
+                                <th>Sponsor</th>
+                                <th class="w-2">Time Behind Primary</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              BEHIND_PRIMARY_RESPONSE
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tab-pane" id="unavailable" role="tabpanel">
+                      <h4>Unavailable</h4>
+                      <p>
+                       This is the list of mirror servers that were found to be
+                       unreachable at the time this Mirror Report was generated.
+                       These listed mirrors did not respond or were otherwise
+                       inaccessible during the report generation.
+                      </p>
+                      <div class="card">
+                        <div class="table-responsive">
+                          <table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                              <tr>
+                                <th class="w-2">Mirror Name</th>
+                                <th>Sponsor</th>
+                                <th>Reason</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              UNAVAILABLE_RESPONSE
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END PAGE BODY -->
+      <!--  BEGIN FOOTER  -->
+      <footer class="footer footer-transparent d-print-none">
+        <div class="container-xl">
+          <div class="row text-center align-items-center flex-row-reverse">
+            <div class="col-lg-auto ms-lg-auto">
+              <ul class="list-inline list-inline-dots mb-0">
+                <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank"
+                    class="link-secondary" rel="noopener">Source code</a></li>
+              </ul>
+            </div>
+            <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+              <ul class="list-inline list-inline-dots mb-0">
+                <li class="list-inline-item">Source mirror: SOURCE_TIME</li>
+                <li class="list-inline-item">Report update: REPORT_TIME</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <!--  END FOOTER  -->
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.0/dist/js/tabler.min.js"></script>
+</body>
