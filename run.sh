@@ -138,7 +138,8 @@ while read -r mirror; do
                 # Mirror is behind the primary mirror
                 behind+="$(behind_record "${mirror}" "${sponsor_url}" "${sponsor}" "$(time_ago_in_words "${mirror_time}" "${original_time}")")"
                 # Notify if the mirror is significantly behind (more than 3 hours)
-                if [[ $compare -gt 10800 ]]; then
+                # if [[ $compare -gt 10800 ]]; then
+                if [[ $compare -gt 60 ]]; then
                     notify "$mirror" "$(time_ago_in_words "${mirror_time}" "${original_time}")"
                 fi
             fi
