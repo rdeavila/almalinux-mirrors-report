@@ -13,8 +13,8 @@ notify() {
         --arg email "$email" \
         '{sender: {email: "no-reply@rda.run",name: "Mirror Report from rda.run"},
         to: [{email: "\($email)"}],
-        textContent: "Hi there!\n\nThe mirror \($mirror) is \($time_difference) behind official AlmaLinux mirrors.\nPlease check the mirror status and update it accordingly.",
-        subject: "\($mirror) is \($time_difference) behind official AlmaLinux mirrors"
+        textContent: "Hi there!\n\nThe mirror \($mirror) is \($difference) behind official AlmaLinux mirrors.\nPlease check the mirror status and update it accordingly.",
+        subject: "\($mirror) is \($difference) behind official AlmaLinux mirrors"
         }')
 
     curl -Ssl --request POST \
@@ -107,7 +107,7 @@ while read -r mirror; do
     status=$(jq -r --arg m "$mirror" '.[$m].status' <<< "$mirrorlist")
     private=$(jq -r --arg m "$mirror" '.[$m].private' <<< "$mirrorlist")
 
-    if [[ $status == "ok" && $private == false ]]; then
+    if [[ $status == "ok" && $private == false && $mirror == "mirrors.rda.run" ]]; then
         # Get the sponsor name and URL of the current mirror
         sponsor=$(echo "$mirrorlist" | jq -r  --arg m "$mirror" '.[$m].sponsor_name')
         sponsor_url=$(echo "$mirrorlist" | jq -r --arg m "$mirror" '.[$m].sponsor_url')
