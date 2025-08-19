@@ -107,7 +107,8 @@ while read -r mirror; do
     status=$(jq -r --arg m "$mirror" '.[$m].status' <<< "$mirrorlist")
     private=$(jq -r --arg m "$mirror" '.[$m].private' <<< "$mirrorlist")
 
-    if [[ $status == "ok" && $private == false && $mirror == "mirrors.rda.run" ]]; then
+#    if [[ $status == "ok" && $private == false && $mirror == "mirrors.rda.run" ]]; then
+    if [[ $status == "ok" && $private == false ]]; then
         # Get the sponsor name and URL of the current mirror
         sponsor=$(echo "$mirrorlist" | jq -r  --arg m "$mirror" '.[$m].sponsor_name')
         sponsor_url=$(echo "$mirrorlist" | jq -r --arg m "$mirror" '.[$m].sponsor_url')
