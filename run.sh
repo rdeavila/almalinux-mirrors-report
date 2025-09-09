@@ -98,6 +98,10 @@ in_sync=""
 behind=""
 unavailable=""
 
+# Arrays to store behind mirrors data for sorting
+declare -a behind_mirrors=()
+declare -a behind_times=()
+
 # Store the list of mirrors in a variable
 mirror_keys=$(echo "$mirrorlist" | jq -r 'keys[]')
 
@@ -136,8 +140,9 @@ while read -r mirror; do
                 # Mirror is in sync with the primary mirror
                 in_sync+="$(in_sync_record "${mirror}" "${sponsor_url}" "${sponsor}")"
             else
-                # Mirror is behind the primary mirror
-                behind+="$(behind_record "${mirror}" "${sponsor_url}" "${sponsor}" "$(time_ago_in_words "${mirror_time}" "${original_time}")")"
+                # Mirror is behind the primary mirror - store for sorting
+                behind_mirrors+=("${mirror}|${sponsor_url}|${sponsor}|$(time_ago_in_words "${mirror_time}" "${original_time}")")
+                behind_times+=("$compare")
                 # Notify if the mirror is significantly behind (more than 3 hours)
                 # if [[ $compare -gt 10800 ]]; then
                 if [[ $compare -gt 60 ]]; then
@@ -156,17 +161,41 @@ while read -r mirror; do
     echo "Tested $mirrorlist_completed of $mirrorlist_total"
 done <<< "$mirror_keys"
 
+# Sort behind mirrors by time difference (ascending - shortest delay first)
+if [ ${#behind_mirrors[@]} -gt 0 ]; then
+    # Create array of indices
+    indices=($(for i in "${!behind_times[@]}"; do echo "$i ${behind_times[$i]}"; done | sort -k2 -n | cut -d' ' -f1))
+    
+    # Generate sorted behind records
+    for i in "${indices[@]}"; do
+        IFS='|' read -r mirror sponsor_url sponsor time_behind <<< "${behind_mirrors[$i]}"
+        behind+="$(behind_record "${mirror}" "${sponsor_url}" "${sponsor}" "${time_behind}")"
+    done
+fi
+
 echo -n "Writing file..."
 
 rm -rf site
 mkdir site
 cp index.html ./site/
 
+# Check if unavailable list is empty and modify the tab accordingly
+unavailable_tab_class=""
+if [[ -z "$unavailable" ]]; then
+    unavailable_tab_class=" disabled"
+    unavailable="<tr><td colspan=\"3\" class=\"text-muted\">No unavailable mirrors found</td></tr>"
+fi
+
 sed -i "s|IN_SYNC_RESPONSE|${in_sync}|g" ./site/index.html
 sed -i "s|BEHIND_PRIMARY_RESPONSE|${behind}|g" ./site/index.html
 sed -i "s|UNAVAILABLE_RESPONSE|${unavailable}|g" ./site/index.html
 sed -i "s|SOURCE_TIME|$(date -d @$original_time)|g" ./site/index.html
 sed -i "s|REPORT_TIME|$(date -u)|g" ./site/index.html
+
+# Disable unavailable tab if no servers found
+if [[ -n "$unavailable_tab_class" ]]; then
+    sed -i 's|<a href="#unavailable" class="nav-link"|<a href="#unavailable" class="nav-link disabled" style="pointer-events: none; color: #adb5bd;"|g' ./site/index.html
+fi
 
 echo " done."
 
