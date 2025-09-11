@@ -55,15 +55,15 @@ time_ago_in_words() {
 }
 
 in_sync_record() {
-    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td></tr>"
+    echo -n "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td></tr>"
 }
 
 behind_record() {
-    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
+    echo -n "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
 }
 
 unavailable_record() {
-    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
+    echo -n "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
 }
 
 echo "Collecting time from primary mirrors..."
@@ -179,22 +179,21 @@ rm -rf site
 mkdir site
 cp index.html ./site/
 
-# Check if unavailable list is empty and modify the tab accordingly
-unavailable_tab_class=""
-if [[ -z "$unavailable" ]]; then
-    unavailable_tab_class=" disabled"
-    unavailable="<tr><td colspan=\"3\" class=\"text-muted\">No unavailable mirrors found</td></tr>"
-fi
-
+# Common sed replacements
 sed -i "s|IN_SYNC_RESPONSE|${in_sync}|g" ./site/index.html
 sed -i "s|BEHIND_PRIMARY_RESPONSE|${behind}|g" ./site/index.html
-sed -i "s|UNAVAILABLE_RESPONSE|${unavailable}|g" ./site/index.html
 sed -i "s|SOURCE_TIME|$(date -d @$original_time)|g" ./site/index.html
 sed -i "s|REPORT_TIME|$(date -u)|g" ./site/index.html
 
-# Disable unavailable tab if no servers found
-if [[ -n "$unavailable_tab_class" ]]; then
-    sed -i 's|<a href="#unavailable" class="nav-link"|<a href="#unavailable" class="nav-link disabled" style="pointer-events: none; color: #adb5bd;"|g' ./site/index.html
+# Unavailable tab logic
+if [[ -z "$unavailable" ]]; then
+    # No unavailable mirrors: disable tab and show message
+    sed -i '/href="#unavailable"/s/class="nav-link"/class="nav-link disabled"/' ./site/index.html
+    unavailable_msg='<tr><td colspan="3" class="text-center text-muted">No unavailable mirrors found</td></tr>'
+    sed -i "s|UNAVAILABLE_RESPONSE|${unavailable_msg}|" ./site/index.html
+else
+    # Has unavailable mirrors: populate the table
+    sed -i "s|UNAVAILABLE_RESPONSE|${unavailable}|g" ./site/index.html
 fi
 
 echo " done."
