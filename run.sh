@@ -55,15 +55,15 @@ time_ago_in_words() {
 }
 
 in_sync_record() {
-    echo -n "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td></tr>"
+    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td></tr>"
 }
 
 behind_record() {
-    echo -n "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
+    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
 }
 
 unavailable_record() {
-    echo -n "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
+    echo "<tr><td>$1</td><td><a href=\"$2\" class=\"text-reset\">$3</a></td><td>$4</td></tr>"
 }
 
 echo "Collecting time from primary mirrors..."
@@ -94,13 +94,11 @@ mirrorlist_total=$(echo "$mirrorlist" | jq 'keys | length')
 mirrorlist_completed=0
 
 echo "Starting mirror probe..."
-in_sync=""
-behind=""
-unavailable=""
 
-# Arrays to store behind mirrors data for sorting
-declare -a behind_mirrors=()
-declare -a behind_times=()
+# Create temporary files
+> in_sync.html
+> behind.tmp
+> unavailable.html
 
 # Store the list of mirrors in a variable
 mirror_keys=$(echo "$mirrorlist" | jq -r 'keys[]')
@@ -138,11 +136,10 @@ while read -r mirror; do
 
             if [[ $compare -le 0 ]]; then
                 # Mirror is in sync with the primary mirror
-                in_sync+="$(in_sync_record "${mirror}" "${sponsor_url}" "${sponsor}")"
+                in_sync_record "${mirror}" "${sponsor_url}" "${sponsor}" >> in_sync.html
             else
                 # Mirror is behind the primary mirror - store for sorting
-                behind_mirrors+=("${mirror}|${sponsor_url}|${sponsor}|$(time_ago_in_words "${mirror_time}" "${original_time}")")
-                behind_times+=("$compare")
+                echo "${compare}|${mirror}|${sponsor_url}|${sponsor}|$(time_ago_in_words "${mirror_time}" "${original_time}")" >> behind.tmp
                 # Notify if the mirror is significantly behind (more than 3 hours)
                 # if [[ $compare -gt 10800 ]]; then
                 if [[ $compare -gt 60 ]]; then
@@ -151,7 +148,7 @@ while read -r mirror; do
             fi
         else
             # Mirror is unavailable or failed to fetch the TIME file
-            unavailable+="$(unavailable_record "${mirror}" "${sponsor_url}" "${sponsor}" "${mirror_resp}")"
+            unavailable_record "${mirror}" "${sponsor_url}" "${sponsor}" "${mirror_resp}" >> unavailable.html
         fi
     fi
     # Increment the count of tested mirrors
@@ -161,17 +158,11 @@ while read -r mirror; do
     echo "Tested $mirrorlist_completed of $mirrorlist_total"
 done <<< "$mirror_keys"
 
-# Sort behind mirrors by time difference (ascending - shortest delay first)
-if [ ${#behind_mirrors[@]} -gt 0 ]; then
-    # Create array of indices
-    indices=($(for i in "${!behind_times[@]}"; do echo "$i ${behind_times[$i]}"; done | sort -k2 -n | cut -d' ' -f1))
-    
-    # Generate sorted behind records
-    for i in "${indices[@]}"; do
-        IFS='|' read -r mirror sponsor_url sponsor time_behind <<< "${behind_mirrors[$i]}"
-        behind+="$(behind_record "${mirror}" "${sponsor_url}" "${sponsor}" "${time_behind}")"
-    done
-fi
+# Sort behind mirrors and write to behind.html
+> behind.html
+sort -n -t'|' -k1 behind.tmp | while IFS='|' read -r compare mirror sponsor_url sponsor time_behind; do
+    behind_record "${mirror}" "${sponsor_url}" "${sponsor}" "${time_behind}" >> behind.html
+done
 
 echo -n "Writing file..."
 
@@ -180,21 +171,24 @@ mkdir site
 cp index.html ./site/
 
 # Common sed replacements
-sed -i "s|IN_SYNC_RESPONSE|${in_sync}|g" ./site/index.html
-sed -i "s|BEHIND_PRIMARY_RESPONSE|${behind}|g" ./site/index.html
-sed -i "s|SOURCE_TIME|$(date -d @$original_time)|g" ./site/index.html
-sed -i "s|REPORT_TIME|$(date -u)|g" ./site/index.html
+sed -i -e "/IN_SYNC_RESPONSE/r in_sync.html" -e "/IN_SYNC_RESPONSE/d" ./site/index.html
+sed -i -e "/BEHIND_PRIMARY_RESPONSE/r behind.html" -e "/BEHIND_PRIMARY_RESPONSE/d" ./site/index.html
+sed -i "s@SOURCE_TIME@$(date -d @$original_time)@g" ./site/index.html
+sed -i "s@REPORT_TIME@$(date -u)@g" ./site/index.html
 
 # Unavailable tab logic
-if [[ -z "$unavailable" ]]; then
+if [[ ! -s unavailable.html ]]; then
     # No unavailable mirrors: disable tab and show message
-    sed -i 's|<a href="#unavailable" class="nav-link"|<a href="#unavailable" class="nav-link disabled"|' ./site/index.html
+    sed -i 's@<a href="#unavailable" class="nav-link"@<a href="#unavailable" class="nav-link disabled"@' ./site/index.html
     unavailable_msg='<tr><td colspan="3" class="text-center text-muted">No unavailable mirrors found</td></tr>'
-    sed -i "s|UNAVAILABLE_RESPONSE|${unavailable_msg}|g" ./site/index.html
+    sed -i "s@UNAVAILABLE_RESPONSE@${unavailable_msg}@g" ./site/index.html
 else
     # Has unavailable mirrors: populate the table
-    sed -i "s|UNAVAILABLE_RESPONSE|${unavailable}|g" ./site/index.html
+    sed -i -e "/UNAVAILABLE_RESPONSE/r unavailable.html" -e "/UNAVAILABLE_RESPONSE/d" ./site/index.html
 fi
+
+# Clean up temporary files
+rm in_sync.html behind.tmp behind.html unavailable.html
 
 echo " done."
 
