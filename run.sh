@@ -188,9 +188,9 @@ sed -i "s|REPORT_TIME|$(date -u)|g" ./site/index.html
 # Unavailable tab logic
 if [[ -z "$unavailable" ]]; then
     # No unavailable mirrors: disable tab and show message
-    sed -i '/href="#unavailable"/s/class="nav-link"/class="nav-link disabled"/' ./site/index.html
+    sed -i 's|<a href="#unavailable" class="nav-link"|<a href="#unavailable" class="nav-link disabled"|' ./site/index.html
     unavailable_msg='<tr><td colspan="3" class="text-center text-muted">No unavailable mirrors found</td></tr>'
-    sed -i "s|UNAVAILABLE_RESPONSE|${unavailable_msg}|" ./site/index.html
+    sed -i "s|UNAVAILABLE_RESPONSE|${unavailable_msg}|g" ./site/index.html
 else
     # Has unavailable mirrors: populate the table
     sed -i "s|UNAVAILABLE_RESPONSE|${unavailable}|g" ./site/index.html
